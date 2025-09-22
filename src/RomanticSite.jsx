@@ -19,13 +19,13 @@ import Notifications from './components/Notifications';
 
 // Firebase configuration with fallback values
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "demo-api-key",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "demo-project.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "demo-project",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "demo-project.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "123456789",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:123456789:web:abcdef",
-  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || "https://demo-project-default-rtdb.firebaseio.com/",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyB2AdqJvWkBtI4zPuLtbjnt0ywvLZucNP0",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "barbara-b998b.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "barbara-b998b",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "barbara-b998b.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "249840508916",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:249840508916:web:e1c2d5ac85337237d963a1",
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || "https://barbara-b998b-default-rtdb.firebaseio.com/",
 };
 
 // Initialize Firebase with error handling
@@ -33,9 +33,10 @@ let app, db;
 try {
   app = initializeApp(firebaseConfig);
   db = getDatabase(app);
-  console.log('Firebase initialized successfully');
+  console.log('Firebase initialized successfully with project:', firebaseConfig.projectId);
 } catch (error) {
   console.error('Firebase initialization failed:', error);
+  console.log('Continuing without Firebase...');
   // Create a mock database for development
   db = null;
 }
@@ -187,8 +188,7 @@ const RomanticSite = () => {
     // Check if Firebase is available
     if (!db) {
       console.warn('Firebase not available, using demo mode');
-      console.log('Setting error state for Firebase not available');
-      setError('Firebase not configured. Please check your environment variables.');
+      console.log('Running in demo mode without Firebase');
       setIsLoading(false);
       return;
     }

@@ -2,10 +2,19 @@ import React, { useState, useEffect } from 'react';
 
 const Notifications = ({ isPartnerOnline, userName, t }) => {
   const [notifications, setNotifications] = useState([]);
-  const [permission, setPermission] = useState(Notification.permission);
+  const [permission, setPermission] = useState('default');
   const [hasRequestedPermission, setHasRequestedPermission] = useState(false);
 
+  // Check if Notification API is available
+  const isNotificationSupported = typeof Notification !== 'undefined';
+
   useEffect(() => {
+    // Only proceed if Notification API is supported
+    if (!isNotificationSupported) {
+      console.log('Notification API not supported');
+      return;
+    }
+
     // Request notification permission only once on first visit
     if (Notification.permission === 'default' && !hasRequestedPermission) {
       // Check if this is the first visit
@@ -26,10 +35,10 @@ const Notifications = ({ isPartnerOnline, userName, t }) => {
         setHasRequestedPermission(true);
       }
     }
-  }, [hasRequestedPermission]);
+  }, [hasRequestedPermission, isNotificationSupported]);
 
   useEffect(() => {
-    if (isPartnerOnline && permission === 'granted') {
+    if (isNotificationSupported && isPartnerOnline && permission === 'granted') {
       // Partner came online
       showNotification(`${userName || 'Your partner'} is now online! 💕`, {
         body: 'Your beloved is connected and ready to share love!',
@@ -39,10 +48,10 @@ const Notifications = ({ isPartnerOnline, userName, t }) => {
         requireInteraction: true
       });
     }
-  }, [isPartnerOnline, userName, permission]);
+  }, [isPartnerOnline, userName, permission, isNotificationSupported]);
 
   const showNotification = (title, options = {}) => {
-    if (permission === 'granted') {
+    if (isNotificationSupported && permission === 'granted') {
       const notification = new Notification(title, {
         ...options,
         vibrate: [200, 100, 200],
@@ -71,6 +80,11 @@ const Notifications = ({ isPartnerOnline, userName, t }) => {
   };
 
   const requestPermission = async () => {
+    if (!isNotificationSupported) {
+      console.log('Notification API not supported');
+      return;
+    }
+    
     const permission = await Notification.requestPermission();
     setPermission(permission);
     

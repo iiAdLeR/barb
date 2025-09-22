@@ -2,9 +2,11 @@
 const CACHE_NAME = 'barabara-v1';
 const urlsToCache = [
   '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/manifest.json'
+  '/index.html',
+  '/assets/index.js',
+  '/assets/index.css',
+  '/manifest.json',
+  '/vite.svg'
 ];
 
 // Install event

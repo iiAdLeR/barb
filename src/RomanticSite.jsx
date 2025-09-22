@@ -17,20 +17,28 @@ import EventCalendar from './components/EventCalendar';
 import MiniGames from './components/MiniGames';
 import Notifications from './components/Notifications';
 
-// Firebase configuration
+// Firebase configuration with fallback values
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "demo-api-key",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "demo-project.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "demo-project",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "demo-project.appspot.com",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "123456789",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:123456789:web:abcdef",
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || "https://demo-project-default-rtdb.firebaseio.com/",
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+// Initialize Firebase with error handling
+let app, db;
+try {
+  app = initializeApp(firebaseConfig);
+  db = getDatabase(app);
+  console.log('Firebase initialized successfully');
+} catch (error) {
+  console.error('Firebase initialization failed:', error);
+  // Create a mock database for development
+  db = null;
+}
 
 // Language settings
 const language = 'es'; // 'en' or 'es'
@@ -111,20 +119,29 @@ const translations = {
 const t = translations[language];
 
 const RomanticSite = () => {
+  // Add error state
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
   // Sistema de inicio de sesión oculto
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState(() => {
-    // Si el usuario es AYHAN (inicio de sesión oculto)
-    const urlParams = new URLSearchParams(window.location.search);
-    const secretKey = urlParams.get('key');
-    
-    if (secretKey === 'ayhan2024') {
-      localStorage.setItem('isAyhan', 'true');
-      return 'ayhan';
+    try {
+      // Si el usuario es AYHAN (inicio de sesión oculto)
+      const urlParams = new URLSearchParams(window.location.search);
+      const secretKey = urlParams.get('key');
+      
+      if (secretKey === 'ayhan2024') {
+        localStorage.setItem('isAyhan', 'true');
+        return 'ayhan';
+      }
+      
+      // Si no es AYHAN, es BARBARA automáticamente
+      return 'barbara';
+    } catch (err) {
+      console.error('Error setting userId:', err);
+      return 'barbara';
     }
-    
-    // Si no es AYHAN, es BARBARA automáticamente
-    return 'barbara';
   });
   
   const [userName, setUserName] = useState(() => {
@@ -143,48 +160,74 @@ const RomanticSite = () => {
 
   // Set up real-time listeners and initial data
   useEffect(() => {
-    localStorage.setItem('userId', userId);
+    try {
+      console.log('Initializing app...', { userId, userName });
+      localStorage.setItem('userId', userId);
 
-    // Register Service Worker for PWA
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          console.log('SW registered: ', registration);
-        })
-        .catch((registrationError) => {
-          console.log('SW registration failed: ', registrationError);
-        });
+      // Register Service Worker for PWA
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('SW registered: ', registration);
+          })
+          .catch((registrationError) => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      }
+    } catch (err) {
+      console.error('Error in initialization:', err);
+      setError(err.message);
+    }
+
+    // Check if Firebase is available
+    if (!db) {
+      console.warn('Firebase not available, using demo mode');
+      setError('Firebase not configured. Please check your environment variables.');
+      setIsLoading(false);
+      return;
     }
 
     const userRef = ref(db, `presses/${userId}`);
     const partnerRef = ref(db, 'presses');
 
-    // Handle user online/offline status
-    onDisconnect(child(userRef, 'online')).set(false);
-    onDisconnect(child(userRef, 'last_seen')).set(serverTimestamp());
+    try {
+      // Handle user online/offline status
+      onDisconnect(child(userRef, 'online')).set(false);
+      onDisconnect(child(userRef, 'last_seen')).set(serverTimestamp());
 
-    // Get and sync all user data
-    onValue(partnerRef, (snapshot) => {
-      const usersData = snapshot.val() || {};
-      const partnerId = Object.keys(usersData).find(key => key !== userId);
+      // Get and sync all user data
+      onValue(partnerRef, (snapshot) => {
+        try {
+          const usersData = snapshot.val() || {};
+          const partnerId = Object.keys(usersData).find(key => key !== userId);
 
-      if (usersData[userId]) {
-        setMyCount(usersData[userId].count || 0);
-        setUserName(usersData[userId].name || 'Guest');
-      }
+          if (usersData[userId]) {
+            setMyCount(usersData[userId].count || 0);
+            setUserName(usersData[userId].name || 'Guest');
+          }
 
-      if (partnerId && usersData[partnerId]) {
-        setPartnerCount(usersData[partnerId].count || 0);
-        setIsPartnerOnline(usersData[partnerId].online || false);
-      } else {
-        setPartnerCount(0);
-        setIsPartnerOnline(false);
-      }
-    });
+          if (partnerId && usersData[partnerId]) {
+            setPartnerCount(usersData[partnerId].count || 0);
+            setIsPartnerOnline(usersData[partnerId].online || false);
+          } else {
+            setPartnerCount(0);
+            setIsPartnerOnline(false);
+          }
+        } catch (err) {
+          console.error('Error processing Firebase data:', err);
+        }
+      });
 
-    // Update user's online status
-    set(child(userRef, 'online'), true);
-    set(child(userRef, 'name'), userName || 'Guest');
+      // Update user's online status
+      set(child(userRef, 'online'), true);
+      set(child(userRef, 'name'), userName || 'Guest');
+      
+      setIsLoading(false);
+    } catch (err) {
+      console.error('Firebase operation failed:', err);
+      setError('Failed to connect to database');
+      setIsLoading(false);
+    }
 
   }, [userId, userName]);
 
@@ -240,50 +283,92 @@ const RomanticSite = () => {
 
   // Function to handle the "Longing Press"
   const handlePress = async (event) => {
-    console.log('🔥 ¡Botón de anhelo presionado!', { userId, userName, event });
-    
-    // Get button position for heart animation
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = rect.left + rect.width / 2;
-    const y = rect.top + rect.height / 2;
-    
-    // Create floating hearts
-    for (let i = 0; i < 5; i++) {
-      setTimeout(() => {
-        createFloatingHeart(
-          x + (Math.random() - 0.5) * 100,
-          y + (Math.random() - 0.5) * 100
-        );
-      }, i * 100);
+    try {
+      console.log('🔥 ¡Botón de anhelo presionado!', { userId, userName, event });
+      
+      // Get button position for heart animation
+      const rect = event.currentTarget.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      
+      // Create floating hearts
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          createFloatingHeart(
+            x + (Math.random() - 0.5) * 100,
+            y + (Math.random() - 0.5) * 100
+          );
+        }, i * 100);
+      }
+      
+      // Play heart beat sound
+      playHeartBeatSound();
+      
+      // Animate the heart pulse
+      const buttonElement = event.currentTarget;
+      buttonElement.classList.add('animate-pulse');
+      setTimeout(() => buttonElement.classList.remove('animate-pulse'), 500);
+
+      // Only update Firebase if available
+      if (db) {
+        const userRef = ref(db, `presses/${userId}`);
+        const logsRef = ref(db, 'logs');
+        
+        // Get current count and update it
+        let currentCount = 0;
+        onValue(child(userRef, 'count'), (snapshot) => {
+          currentCount = snapshot.val() || 0;
+        }, { onlyOnce: true });
+
+        const newCount = currentCount + 1;
+        set(child(userRef, 'count'), newCount);
+
+        // Add a new log entry
+        push(logsRef, {
+          name: userName || 'Guest',
+          timestamp: serverTimestamp(),
+          press_count: newCount,
+        });
+      } else {
+        // Demo mode - just update local state
+        setMyCount(prev => prev + 1);
+        console.log('Demo mode: Press count updated locally');
+      }
+    } catch (err) {
+      console.error('Error in handlePress:', err);
+      setError('Error processing press. Please try again.');
     }
-    
-    // Play heart beat sound
-    playHeartBeatSound();
-    
-    // Animate the heart pulse
-    const buttonElement = event.currentTarget;
-    buttonElement.classList.add('animate-pulse');
-    setTimeout(() => buttonElement.classList.remove('animate-pulse'), 500);
-
-    const userRef = ref(db, `presses/${userId}`);
-    const logsRef = ref(db, 'logs');
-    
-    // Get current count and update it
-    let currentCount = 0;
-    onValue(child(userRef, 'count'), (snapshot) => {
-      currentCount = snapshot.val() || 0;
-    }, { onlyOnce: true });
-
-    const newCount = currentCount + 1;
-    set(child(userRef, 'count'), newCount);
-
-    // Add a new log entry
-    push(logsRef, {
-      name: userName || 'Guest',
-      timestamp: serverTimestamp(),
-      press_count: newCount,
-    });
   };
+
+  // Show error screen if there's an error
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-pink-600 to-red-500">
+        <div className="text-center text-white p-8">
+          <h1 className="text-2xl font-bold mb-4">⚠️ خطأ في التحميل</h1>
+          <p className="mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-white text-purple-900 px-6 py-2 rounded-lg font-semibold"
+          >
+            إعادة المحاولة
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading screen
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-pink-600 to-red-500">
+        <div className="text-center text-white">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-xl">جاري التحميل... 💕</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden">

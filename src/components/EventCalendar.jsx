@@ -8,10 +8,17 @@ const EventCalendar = ({ db, userId, userName, t, playHeartBeatSound }) => {
 
   // Obtener y sincronizar eventos
   useEffect(() => {
+    if (!db) {
+      console.log('EventCalendar: No database available');
+      return;
+    }
+    
     const eventsRef = ref(db, 'events');
     onValue(eventsRef, (snapshot) => {
       const eventsData = snapshot.val() || {};
+      console.log('EventCalendar: Raw events data:', eventsData);
       const eventArray = Object.values(eventsData).sort((a, b) => new Date(a.date) - new Date(b.date));
+      console.log('EventCalendar: Processed events:', eventArray);
       setEvents(eventArray);
     });
   }, [db]);
@@ -37,15 +44,24 @@ const EventCalendar = ({ db, userId, userName, t, playHeartBeatSound }) => {
     playHeartBeatSound();
   };
 
-  // Get upcoming events (next 30 days)
+  // Get upcoming events (next 365 days)
   const getUpcomingEvents = () => {
     const today = new Date();
-    const next30Days = new Date(today.getTime() + (30 * 24 * 60 * 60 * 1000));
+    const next365Days = new Date(today.getTime() + (365 * 24 * 60 * 60 * 1000));
     
-    return events.filter(event => {
+    console.log('EventCalendar: Total events:', events.length);
+    console.log('EventCalendar: Today:', today.toISOString().split('T')[0]);
+    console.log('EventCalendar: Next 365 days:', next365Days.toISOString().split('T')[0]);
+    
+    const upcoming = events.filter(event => {
       const eventDate = new Date(event.date);
-      return eventDate >= today && eventDate <= next30Days;
-    }).slice(0, 5); // Show only next 5 events
+      const isUpcoming = eventDate >= today && eventDate <= next365Days;
+      console.log(`EventCalendar: Event "${event.title}" on ${event.date} - Upcoming: ${isUpcoming}`);
+      return isUpcoming;
+    }).slice(0, 10); // Show next 10 events
+    
+    console.log('EventCalendar: Upcoming events:', upcoming);
+    return upcoming;
   };
 
   // Format date for display

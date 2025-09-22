@@ -380,7 +380,7 @@ const RomanticSite = () => {
 
   console.log('Rendering main app content');
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden" style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #8B5CF6, #EC4899)' }}>
       {/* Fondo degradado profesional محسن */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-pink-600 to-red-500"></div>
       <div className="absolute inset-0 bg-gradient-to-tl from-blue-900/30 via-transparent to-purple-900/30"></div>
@@ -408,22 +408,22 @@ const RomanticSite = () => {
       <VisualEffects floatingHearts={floatingHearts} />
       
       {/* Contenido principal محسن للجوال */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-start text-white font-sans px-4 py-6 sm:py-8">
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-start text-white font-sans px-4 py-6 sm:py-8" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', color: 'white', padding: '20px' }}>
         
         {/* Sección de bienvenida محسنة للجوال */}
-        <div className="text-center mb-8 sm:mb-12">
+        <div className="text-center mb-8 sm:mb-12" style={{ textAlign: 'center', marginBottom: '30px' }}>
           <div className="relative">
             {/* تأثير الهالة حول العنوان */}
             <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-purple-400/20 rounded-full blur-3xl scale-110"></div>
-            <h1 className="relative text-4xl sm:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-pink-100 to-purple-200 bg-clip-text text-transparent animate-fade-in">
+            <h1 className="relative text-4xl sm:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-pink-100 to-purple-200 bg-clip-text text-transparent animate-fade-in" style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '20px', color: 'white' }}>
               {userId === 'barbara' ? '¡Hola Barbara! 💕' : t.welcome}
             </h1>
           </div>
-          <p className="text-xl sm:text-2xl font-light text-pink-100 drop-shadow-lg mb-2">
+          <p className="text-xl sm:text-2xl font-light text-pink-100 drop-shadow-lg mb-2" style={{ fontSize: '1.5rem', color: 'white', marginBottom: '10px' }}>
             {userId === 'barbara' ? 'AYHAN & BARBARA 💖' : t.names}
           </p>
           {userId === 'barbara' && (
-            <div className="flex items-center justify-center gap-2 text-lg text-pink-200 mt-2 animate-pulse">
+            <div className="flex items-center justify-center gap-2 text-lg text-pink-200 mt-2 animate-pulse" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontSize: '1.2rem', color: 'white', marginTop: '10px' }}>
               <span>🌹</span>
               <span>¡Bienvenida a nuestro mundo romántico!</span>
               <span>🌹</span>

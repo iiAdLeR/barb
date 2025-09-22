@@ -1,12 +1,12 @@
 import React from 'react';
-import SimpleApp from './SimpleApp';
+import RomanticSite from './RomanticSite';
 
 function App() {
-  console.log('App component loaded - using SimpleApp');
+  console.log('App component loaded - using RomanticSite');
   
   return (
     <div className="App">
-      <SimpleApp />
+      <RomanticSite />
     </div>
   );
 }

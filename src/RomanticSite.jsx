@@ -381,28 +381,6 @@ const RomanticSite = () => {
   console.log('Rendering main app content');
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Debug button for mobile */}
-      <button
-        onClick={() => {
-          console.log('Debug button clicked');
-          alert('Check console for debugging info!');
-        }}
-        style={{
-          position: 'fixed',
-          top: '10px',
-          right: '10px',
-          zIndex: 9999,
-          background: 'red',
-          color: 'white',
-          border: 'none',
-          padding: '10px',
-          borderRadius: '5px',
-          fontSize: '12px',
-          cursor: 'pointer'
-        }}
-      >
-        🔧 DEBUG
-      </button>
       {/* Fondo degradado profesional محسن */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-pink-600 to-red-500"></div>
       <div className="absolute inset-0 bg-gradient-to-tl from-blue-900/30 via-transparent to-purple-900/30"></div>

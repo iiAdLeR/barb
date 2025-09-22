@@ -123,6 +123,11 @@ const RomanticSite = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   
+  // Add debugging
+  console.log('RomanticSite component loaded');
+  console.log('Current error state:', error);
+  console.log('Current loading state:', isLoading);
+  
   // Sistema de inicio de sesión oculto
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState(() => {
@@ -182,6 +187,7 @@ const RomanticSite = () => {
     // Check if Firebase is available
     if (!db) {
       console.warn('Firebase not available, using demo mode');
+      console.log('Setting error state for Firebase not available');
       setError('Firebase not configured. Please check your environment variables.');
       setIsLoading(false);
       return;
@@ -342,6 +348,7 @@ const RomanticSite = () => {
 
   // Show error screen if there's an error
   if (error) {
+    console.log('Showing error screen:', error);
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-pink-600 to-red-500">
         <div className="text-center text-white p-8">
@@ -360,6 +367,7 @@ const RomanticSite = () => {
 
   // Show loading screen
   if (isLoading) {
+    console.log('Showing loading screen');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-pink-600 to-red-500">
         <div className="text-center text-white">
@@ -370,6 +378,7 @@ const RomanticSite = () => {
     );
   }
 
+  console.log('Rendering main app content');
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Fondo degradado profesional محسن */}

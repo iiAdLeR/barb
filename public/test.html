@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AYHAN & BARBARA 💕</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #8B5CF6, #EC4899);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        .success {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            background: white;
+            color: #8B5CF6;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .debug {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: red;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug">DEBUG: ✅ يعمل</div>
+    
+    <h1>🎉 AYHAN & BARBARA 💕</h1>
+    
+    <p>مرحباً! التطبيق يعمل الآن على الجوال! 🚀</p>
+    
+    <div class="success">
+        <h2>✅ تم إصلاح المشكلة!</h2>
+        <p>الصفحة البيضاء تم حلها</p>
+    </div>
+    
+    <button onclick="alert('زر يعمل! 🎉')">
+        اضغط هنا للاختبار 🎯
+    </button>
+    
+    <script>
+        console.log('Test page loaded successfully!');
+        console.log('User agent:', navigator.userAgent);
+        console.log('Screen size:', window.innerWidth, 'x', window.innerHeight);
+    </script>
+</body>
+</html>

@@ -15,5 +15,19 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Eruda for mobile debugging -->
+    <script>
+      // Load Eruda only on mobile devices
+      if (window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/eruda@3.0.0/eruda.min.js';
+        script.onload = function() {
+          eruda.init();
+          console.log('Eruda loaded for mobile debugging');
+        };
+        document.head.appendChild(script);
+      }
+    </script>
   </body>
 </html>
